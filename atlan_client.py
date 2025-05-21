@@ -1,6 +1,10 @@
 from pyatlan.client.atlan import AtlanClient
 from config import ATLAN_BASE_URL, ATLAN_API_KEY
 
+client = AtlanClient(
+    base_url=ATLAN_BASE_URL,
+    api_key=ATLAN_API_KEY,
+)
 
 def get_atlan_client():
     """
@@ -9,7 +13,4 @@ def get_atlan_client():
         AtlanClient: An authenticated client for interacting with the Atlan API.
     """
     
-    return AtlanClient(
-        base_url=ATLAN_BASE_URL,
-        api_key=ATLAN_API_KEY,
-    )
+    return client

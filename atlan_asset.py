@@ -4,11 +4,13 @@ from pyatlan.model.fluent_search import FluentSearch
 from pyatlan.errors import NotFoundError
 import logging
 from config import BUCKET_ARN_CUSTOM, BUCKET_NAME
+from atlan_client import get_atlan_client
 
 logger = logging.getLogger(__name__)
 
+client = get_atlan_client()
 
-def get_or_create_s3_connection(client):
+def get_or_create_s3_connection():
     """
     Retrieve the qualified name of an existing AWS S3 connection or create a new one if it does not exist.
     This function attempts to find an S3 connection with a specific name and connector type.
@@ -37,7 +39,7 @@ def get_or_create_s3_connection(client):
         return response.assets_created(asset_type=Connection)[0].qualified_name
 
 
-def get_or_create_s3_bucket(client, connection_qualified_name):
+def get_or_create_s3_bucket(connection_qualified_name):
     """
     Retrieves the qualified name of an S3 bucket asset from Atlan if it exists, or creates it if it does not.
     This function searches for an S3 bucket asset in Atlan with a specific name. If the asset does not exist,
@@ -93,6 +95,9 @@ def create_s3_object(connection_qualified_name, bucket_qualified_name, s3_object
         None
     """
     
+    if get_atlan_s3_object(bucket_qualified_name, s3_object['key']) is not None:
+        logger.debug(f"S3 object {s3_object['key']} already exists in Atlan.")
+        return
     updater = S3Object.creator(
         name=s3_object['key'],
         connection_qualified_name=connection_qualified_name,
@@ -107,7 +112,7 @@ def create_s3_object(connection_qualified_name, bucket_qualified_name, s3_object
     batch.add(updater)
 
 
-def update_bucket_object_count(client, bucket_qualified_name, count):
+def update_bucket_object_count(bucket_qualified_name, count):
     """
     Updates the object count for a specified S3 bucket asset.
     Args:
@@ -128,12 +133,12 @@ def update_bucket_object_count(client, bucket_qualified_name, count):
     client.asset.save(updater)
     logger.info(f"Bucket updated with {count} objects.")
 
-# Table fetchers (with caching)
+# Asset fetchers (with caching)
 postgres_tables = []
 snowflake_tables = []
 atlan_s3_objects = []
 
-def get_postgres_table(client, table_name):
+def get_postgres_table(table_name):
     """
     Retrieve a Postgres table asset by name from Atlan, utilizing a cached list for efficiency.
     If the cache of Postgres tables (`postgres_tables`) is empty, this function fetches all active Postgres table assets
@@ -163,7 +168,7 @@ def get_postgres_table(client, table_name):
             return table
     raise Exception(f"Table {table_name} not found in postgres tables.")
 
-def get_snowflake_table(client, table_name):
+def get_snowflake_table(table_name):
     """
     Retrieve a Snowflake table asset by name, utilizing a cached list of tables.
     If the cache of Snowflake tables is empty, this function fetches all active Snowflake tables
@@ -193,7 +198,7 @@ def get_snowflake_table(client, table_name):
             return table
     raise Exception(f"Table {table_name} not found in snowflake tables.")
 
-def get_atlan_s3_object(client, bucket_qualified_name, s3_object_name):
+def get_atlan_s3_object(bucket_qualified_name, s3_object_name):
     """
     Retrieve an S3 object from Atlan by its name and bucket qualified name.
 
