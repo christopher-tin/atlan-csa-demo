@@ -76,11 +76,10 @@ def get_or_create_s3_bucket(client, connection_qualified_name):
         return qualified_name
 
 
-def create_s3_object(client, connection_qualified_name, bucket_qualified_name, s3_object):
+def create_s3_object(connection_qualified_name, bucket_qualified_name, s3_object, batch):
     """
     Creates and saves an S3 object asset using the provided client and metadata.
     Args:
-        client: The client instance used to interact with the asset management system.
         connection_qualified_name (str): The qualified name of the S3 connection.
         bucket_qualified_name (str): The qualified name of the S3 bucket.
         s3_object (dict): A dictionary containing S3 object metadata with keys:
@@ -89,6 +88,7 @@ def create_s3_object(client, connection_qualified_name, bucket_qualified_name, s
             - 'last_modified' (str or datetime): The last modified timestamp of the object.
             - 'size' (int): The size of the object in bytes.
             - 'storage_class' (str): The storage class of the S3 object.
+        batch: The batch instance used to interact with the asset management system.
     Returns:
         None
     """
@@ -104,7 +104,7 @@ def create_s3_object(client, connection_qualified_name, bucket_qualified_name, s
     updater.s3_object_last_modified_time = s3_object['last_modified']
     updater.s3_object_size = s3_object['size']
     updater.s3_object_storage_class = s3_object['storage_class']
-    client.asset.save(updater)
+    batch.add(updater)
 
 
 def update_bucket_object_count(client, bucket_qualified_name, count):
