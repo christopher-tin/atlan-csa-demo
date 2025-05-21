@@ -18,7 +18,7 @@ The project uses `uv` for environment management. If `uv` is installed, you can 
 
 2. **Configure environment variables:**
     - Update the `.env` file with your `ATLAN_API_KEY`.
-    - If running `example_ai.ipynb`, also set the `OPENAPI_API_KEY`.
+    - If running `example_pii_classification.ipynb`, also set the `OPENAPI_API_KEY`.
 
 3. **Install dependencies:**
     ```bash
