@@ -1,0 +1,17 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Sandbox files
+.sandbox/
+
+# Build artifacts
+lambda_build/
+lambda_package.zip

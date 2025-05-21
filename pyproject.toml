@@ -1,0 +1,14 @@
+[project]
+name = "sync-s3-atlan"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "boto3>=1.38.15",
+    "ipykernel>=6.29.5",
+    "openai>=1.78.1",
+    "pyatlan>=6.0.6",
+    "python-dotenv>=1.1.0",
+    "xmltodict>=0.14.2",
+]
